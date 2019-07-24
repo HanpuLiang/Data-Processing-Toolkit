@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+'''
+@author: Liang Hanpu
+@create date: 2019/07/22
+@description: This code (Data Processing Toolkit) integrates to get the energy band data, DOS, and fat energy band data.
+'''
+
+from optparse import OptionParser
+import sys, time
+from src.electronic_structure import electronic_structure
+
+# ------------ Options set--------------
+def optional_arg(arg_default):
+    def func(option, opt_str, value, parser):
+        if parser.rargs and not parser.rargs[0].startswith('-'):
+            val = parser.rargs[0]
+            parser.rargs.pop[0]
+        else:
+            val = arg_default
+        setattr(parser.values, option.dest, val)
+
+parser = OptionParser()
+parser.add_option('-b', '--band', dest='band', action='store_true', 
+                  help='calculate the energy band and save it into Energy.out')
+parser.add_option('-d', '--dos', dest='dos', action='store_true', 
+                  help='calculate the density of states and save it into ATOM_dos.out')
+parser.add_option('-f', '--fat', dest='fat', action='store_true', 
+                  help='calculate the fat band and save it into all_orbits/')
+parser.add_option('-c', '--column', dest='column', action='store_true', 
+                  help='save all files into band_data.out or fat_band_ATOM.out and one data one column')
+
+(options, args) = parser.parse_args()
+
+if len(sys.argv) == 1:
+    parser.print_help()
+
+code_start = time.time()
+
+# calculate band
+if options.band:
+    electronic_structure('band', savetype=options.column)
+
+# calculate DOS
+if options.dos:
+    electronic_structure('dos', savetype=options.column)
+
+# calculate fat band
+if options.fat:
+    electronic_structure('fat', savetype=options.column)
+
+code_end = time.time()
+print("Program running time: %.2f seconds"%(code_end-code_start))

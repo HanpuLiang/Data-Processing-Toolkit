@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -l walltime=5580:00:00
+#PBS -N absorp
+#PBS -V
+#PBS -j oe
+#PBS -q impi
+#PBS -l nodes=1:ppn=24
+
+cd $PBS_O_WORKDIR
+
+NP=`cat $PBS_NODEFILE|wc -l`
+
+ulimit -s unlimited
+ulimit -m unlimited
+ulimit -c unlimited
+ulimit -d unlimited
+
+
+cp POSCAR POSCAR_ori
+for i in {1..3}
+do
+    cp INCAR_$i INCAR
+    MPI_PATH -machinefile $PBS_NODEFILE -np $NP VASP_PATH >> out.$i 2>>err.vasp
+    cp CONTCAR POSCAR
+    cp OUTCAR OUTCAR$i
+    cp IBZKPT IBZKPT$i
+done

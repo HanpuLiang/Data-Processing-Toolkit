@@ -28,7 +28,7 @@ SOFTWARE.
 
 '''
 
-import sys, system_cmd
+import sys, src.system_cmd
 from os import system, path
 from numpy import array, shape, tile, ravel, zeros, c_
 
@@ -50,12 +50,10 @@ def transport(matrix):
 def one_column_type(k, E, atom=None, orbit=None):
     # get all data to one list
     all_list = []
-    # k points
-    k = array(k)
     # energy
-    E = array(E)
+    E = E[:,:,0]
     # the size of Energy
-    l, c = shape(E)
+    l, c = E.shape
     k = tile(k, c)
     E = ravel(E, order='F')
     out_1 = c_[k,E]
@@ -82,10 +80,10 @@ def one_column_type(k, E, atom=None, orbit=None):
         out_str.insert(l*(c-i)+1, ' ')
     if atom == None:
         out_name = './band_data.dat'
-        system_cmd.systemEcho('band_data.dat saved!')
+        src.system_cmd.systemEcho(' [DPT] - band_data.dat saved!')
     else:
         out_name = './fat_band_'+atom+'.dat'
-        system_cmd.systemEcho('fat_band_'+atom+'.dat saved!')
+        src.system_cmd.systemEcho(' [DPT] - fat_band_'+atom+'.dat saved!')
     with open(out_name, 'w') as obj:
         obj.write(' \n'.join(out_str))
 

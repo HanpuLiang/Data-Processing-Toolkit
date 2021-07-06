@@ -1,0 +1,16 @@
+   PREC  = Accurate 
+  ISTART = 0 
+ ICHARG  = 2
+ PSTRESS = 0.001
+  ENCUT  = 600
+  ISMEAR = -5
+  EDIFF  = 1E-8  
+  NSW    = 0
+ IBRION  = -1
+ ISIF    = 2
+  EDIFFG = -0.005 
+ NPAR    = 2
+
+LELF     = .TRUE.
+KSPACING = 0.2
+KGAMMA   = .TRUE.

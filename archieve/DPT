@@ -9,7 +9,8 @@
 
 from optparse import OptionParser
 import sys, time
-from src.electronic_structure import electronic_structure
+from src.bridge import bridge
+from src.system_cmd import systemError, systemEcho
 
 # ------------ Options set--------------
 def optional_arg(arg_default):
@@ -23,13 +24,29 @@ def optional_arg(arg_default):
 
 parser = OptionParser()
 parser.add_option('-b', '--band', dest='band', action='store_true', 
-                  help='calculate the energy band and save it into Energy.out')
+                  help='calculate the energy band and save it into DPT.BAND.dat')
 parser.add_option('-d', '--dos', dest='dos', action='store_true', 
                   help='calculate the density of states and save it into ATOM_dos.out')
 parser.add_option('-f', '--fat', dest='fat', action='store_true', 
-                  help='calculate the fat band and save it into all_orbits/')
+                  help='calculate the projected band and save it into all_orbits/')
 parser.add_option('-c', '--column', dest='column', action='store_true', 
                   help='save all files into band_data.out or fat_band_ATOM.out and one data one column')
+parser.add_option('--bader', dest='bader', action='store_true',
+                  help='interface of VASP and bader analysis scripts')
+parser.add_option('--diele', dest='diele', action='store_true',
+                  help='contract the born effective charges and dielectric tensor into files')
+parser.add_option('--elastic', dest='elastic', action='store_true',
+                  help='contract elastic moduli matrix from OUTCAR and calculate each elastic modulous')
+parser.add_option('--absorp', dest='absorp', action='store_true',
+                  help='process the VASP data for optic properties, and output the absorption coefficient and real and imagine part of dielectric constants.')
+parser.add_option('-s', '--strain', dest='strain', action='store_true',
+                  help='Strain the lattice vectors in POSCAR, direction: x, y, z, xy, xyz, a, b, c')
+parser.add_option('--te', dest='te', action='store_true',
+                  help="Create the jobs for the calculation of thermal electric properties. 'files' for preperation files, 'rel' for relaxtion, 'band' for electronic structure and 'cal' for data processing.")
+parser.add_option('-v', '--vasp', dest='vasp', action='store_true',
+                  help='Create the input files for VASP. Enter `DPT -v` to know the detail parameters.')
+parser.add_option('--vdW', dest='vdW', action='store_true',
+                  help='Add the vdW correction into the INCARs.')
 
 (options, args) = parser.parse_args()
 
@@ -40,15 +57,116 @@ code_start = time.time()
 
 # calculate band
 if options.band:
-    electronic_structure('band', savetype=options.column)
+    E_0 = 'fermi'
+    if len(args) != 0:
+        E_0 = args[0]
+    bridge('band', savetype=options.column, E_0=E_0)
 
 # calculate DOS
 if options.dos:
-    electronic_structure('dos', savetype=options.column)
+    bridge('dos', savetype=options.column)
 
 # calculate fat band
 if options.fat:
-    electronic_structure('fat', savetype=options.column)
+    bridge('fat', savetype=options.column)
+
+# calculate bader charge
+if options.bader:
+    bridge('bader')
+
+# get born effective charges and dielectric tensor
+if options.diele:
+    bridge('diele')
+
+# get optic properties
+if options.absorp:
+    bridge('absorp')
+
+# calculate the elastic moduli
+if options.elastic:
+    # elastic dimension
+    dimension = 3
+    if len(args) != 0:
+        dimension = float(args[0])
+    bridge('hard', dimension=dimension)
+
+# calculate the thermal electric properties
+if options.te:
+    # thermal electric parameters
+    systemError(' [DPT] - This Method is not ready!')
+    '''
+    te_action = 'none'
+    te_dimension = 2
+    if len(args) == 2:
+        te_action = args[0]
+        te_dimension = args[1]
+        bridge('te', te_action=te_action, te_dimension=te_dimension)
+    else:
+        systemError('Missing Parameters.\n $ DPT --te [files/relax/band/process] [2/3]')
+    '''
+
+
+if options.strain:
+    # strain parameters
+    strain_direction = 'xyz'
+    strain_begin = 0
+    strain_end = 0.1
+    strain_step = 0.01
+    strain_process = 'cal'
+    strain_type = 'pos'
+    if len(args) == 5:
+        strain_direction = args[0]
+        strain_begin = float(args[1])
+        strain_end = float(args[2])
+        strain_step = float(args[3])
+        strain_type = args[4]
+        bridge('strain', strain_direction=strain_direction, strain_begin=strain_begin,
+                strain_end=strain_end, strain_step=strain_step, strain_type=strain_type)
+    elif len(args) == 1 and args[0] == 'plot':
+        bridge('strain', strain_process=args[0])
+    else:
+        systemError(' Missing Parameters.\n $ DPT -s [direction] [begin] [end] [step] [type]')
+
+
+if options.vasp:
+    # vasp parameters
+    if len(args) == 1:
+        file_type = args[0]
+        method = 'no'
+        bridge('vasp', file_type=file_type, method=method)
+    elif len(args) == 2:
+        file_type = args[0]
+        method = args[1]
+        bridge('vasp', file_type=file_type, method=method)
+    else:
+        systemError(''' Missing Parameters.\n $ DPT -v [type] [method]
+ type: 
+    rel     : Relaxation
+    band    : Electronic structure
+    diele   : Born effective charge and dielectric matrix
+    absorp  : Absorption coefficient
+    elastic : Elastic constants
+    ELF     : Electron localization function
+    PCD     : Partial charge density
+    force   : Force Constants (Phonon Specturm)
+    POTCAR  : Get POTCAR corresponding atom type of POSCAR
+ method: 
+    energy: only for 'rel' type. This INCAR only calculate energy
+    2d    : only for 'rel' type. Modify vasp_std to vasp_relax_ab
+    gam   : only for 'rel' type. Modify vasp_std to vasp_gam
+    PBE   : only for 'band' type. Calculate the electronic structure by PBE method.
+    HSE   : only for 'band' type. Calculate the electronic structure by HSE06 method.''')
+
+if options.vdW:
+    # vdW correction
+    if len(args) == 0:
+        vdW_method = 'optB88'
+        bridge('vdw', vdW_method=vdW_method)
+    elif len(args) == 1:
+        vdW_method = args[0]
+        bridge('vdw', vdW_method=vdW_method)
+    else:
+        systemError(' Wrong Parameters.\n $ DPT --vdW [method].\n vdW Method: optB88, optB86b, optPBE, vdW-DF, vdW-DF2')
 
 code_end = time.time()
-print("Program running time: %.2f seconds"%(code_end-code_start))
+print(" *DPT Finish* - Program running time: %.2f seconds"%(code_end-code_start))

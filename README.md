@@ -13,7 +13,7 @@ python版本: python2.7及以后。目前要求有numpy库。
 利用命令行端输入
 
 ```sh
-$ wget -N --no-check-certificate https://github.com/HanpuLiang/Data-Processing-Toolkit/tree/master/public/DPT-0.4.tar.gz
+$ wget -N --no-check-certificate https://github.com/HanpuLiang/Data-Processing-Toolkit/tree/master/public/DPT-0.8.3.tar.gz
 ```
 
 ## 安装
@@ -24,7 +24,13 @@ $ wget -N --no-check-certificate https://github.com/HanpuLiang/Data-Processing-T
 $ tar -zxcf DPT-0.4.tar.gz
 ```
 
-进入文件夹并运行安装脚本
+进入文件夹并修改安装脚本中各路径，如VASP, MPI等
+
+```shell
+$ vim install.sh
+```
+
+运行安装脚本
 
 ```shell
 $ cd DPT-0.4

@@ -1,0 +1,19 @@
+PREC     = accurate
+ISTART   = 1
+EDIFF    = 1E-06 
+LREAL    = .FALSE.
+LWAVE    = .TRUE.
+LCHARG   = .TRUE.
+ISMEAR   = 0
+SIGMA    = 0.02
+ISYM     = 3 
+LHFCALC  = .TRUE.
+HFSCREEN = 0.2
+TIME     = 0.4
+AEXX     = 0.25
+ALGO     = N
+IMIX     = 1
+LORBIT   = 11
+PRECFOCK = N 
+NELM     = 300
+

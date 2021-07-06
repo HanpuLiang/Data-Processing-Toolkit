@@ -1,0 +1,10 @@
+ISTART   = 1
+PREC     = accurate
+SIGMA    = 0.02
+LHFCALC  = .TRUE.
+HFSCREEN = 0.2
+ALGO     = ALL 
+TIME     = 0.4
+PRECFOCK = N
+AEXX     = 0.25
+EDIFF    = 0.1E-06

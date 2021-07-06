@@ -26,6 +26,18 @@ SOFTWARE.
 '''
 
 import datetime
+import os
+
+def Open_screen():
+    now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print('''
+       *-----------------*-----*
+       |  Data           |  D  |        Version : 0.8.1
+       |     Processing  |  P  |  Latest Update : 2020-10-27 
+       |         Toolkit |  T  |         Author : Liang HP
+       *-----------------*-----*
+              Current Time: {0}
+'''.format(now_time))
 
 def systemEcho(content):
     ''' system information print to screen'''
@@ -45,3 +57,6 @@ def systemLog(content):
     out_str = now_time + '---' + content + '\n'
     with open('./system.log', 'a') as obj:
         obj.write(out_str)
+
+
+

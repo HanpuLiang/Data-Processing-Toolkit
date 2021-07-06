@@ -1,0 +1,19 @@
+   PREC  = High 
+  ISTART = 0 
+ ICHARG  = 2
+ PSTRESS = 0
+  ENCUT  = 500
+  ISMEAR = 0
+  EDIFF  = 1E-8  
+  NSW    = 300
+ IBRION  = 2
+ ISIF    = 3
+ NPAR=2
+ EDIFFG = -1E-5
+
+#LDAU = .TRUE.
+#LDAUTYPE = 2
+#LDAUL = 2 -1
+#LDAUU =3.00 0.0 
+#LDAUJ = 0.00 0.0
+#LDAUPRINT = 0

@@ -1,0 +1,24 @@
+SYSTEM   = absorp
+ENCUT    = 450
+ISTART   = 1
+ICHARG   = 2
+ISMEAR   = 0
+NSW      = 0
+IBRION   = -1
+SIGMA    = 0.1
+ISMEAR   = -5
+IVDW     = 11
+
+LWAVE    = .FALSE.   
+LCHARG   = .FALSE. 
+LOPTICS  = .TRUE.
+
+NEDOS    = 2000
+CSHIFT   = 0.1
+
+
+LHFCALC  = .TRUE.
+HFSCREEN = 0.2
+ALGO     = N
+TIME     = 0.4
+

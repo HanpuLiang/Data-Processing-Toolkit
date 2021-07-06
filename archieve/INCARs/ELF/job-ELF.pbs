@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -l walltime=5580:00:00
+#PBS -N ELF
+#PBS -V
+#PBS -j oe
+#PBS -q impi
+#PBS -l nodes=1:ppn=24
+
+cd $PBS_O_WORKDIR
+
+NP=`cat $PBS_NODEFILE|wc -l`
+
+ulimit -s unlimited
+ulimit -m unlimited
+ulimit -c unlimited
+ulimit -d unlimited
+
+MPI_PATH -machinefile $PBS_NODEFILE -np $NP VASP_PATH >> vasp.out 2>>err.vasp

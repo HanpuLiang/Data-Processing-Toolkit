@@ -1,6 +1,6 @@
 # Data-Processing-Toolkit
 
-Data Processing Toolkit (DPT)是一个用来处理计算结束后数据的一个工具包。目前版本为测试版0.4，尚未成为正式版，因此如有出现bug、或者想要添加某些功能，可以联系邮箱hanpu-liang@cumt.edu.cn进行反馈。
+Data Processing Toolkit (DPT)是一个用来处理计算结束后数据的一个工具包。目前版本为测试版0.8.3，尚未成为正式版，因此如有出现bug、或者想要添加某些功能，可以联系邮箱hanpu-liang@cumt.edu.cn进行反馈。
 
 ## 环境
 

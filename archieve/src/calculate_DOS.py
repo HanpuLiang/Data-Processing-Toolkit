@@ -102,7 +102,7 @@ def calculate_atom_DOS(N_num, N_begin):
 def save_DOS(atom_tot, p_dos, atom):
     ''' save each atom's DOS into files'''
     out_data = np.column_stack((E_DOS, atom_tot, p_dos))
-    out_data_str = [''.join(['{0:14.9f}'.format(item) for item in line]) for line in out_data]
+    out_data_str = [''.join(['{0:20.9f}'.format(item) for item in line]) for line in out_data]
     if SPIN == 1:
         title_label = ['{0:14s}'.format('E'), '{0:14s}'.format(atom+'_tot'), '{0:14s}'.format(atom+'_s'), '{0:14s}'.format(atom+'_p'), 
             '{0:14s}'.format(atom+'_d')]
@@ -118,7 +118,7 @@ def save_DOS(atom_tot, p_dos, atom):
     src.system_cmd.systemEcho(' [DPT] - DPT.'+atom+'_dos.dat saved!')
 
 def save_tot():
-    all_out = [''.join(['{0:14.9f}'.format(E_DOS[i,0])]+['{0:14.9f}'.format(item) for item in line]) for i, line in enumerate(TOTAL_DOS)]
+    all_out = [''.join(['{0:20.9f}'.format(E_DOS[i,0])]+['{0:20.9f}'.format(item) for item in line]) for i, line in enumerate(TOTAL_DOS)]
     
     # all_out = ['%14.9f%14.9f'%(E_DOS[i],TOTAL_DOS[i]) for i, item in enumerate(E_DOS)]
     all_out.insert(0, '%14s%14s%14s%14s%14s'%('E','DOS(UP)', 'DOS(DOWN)', 'Int.DOS(UP)', 'Int.DOS(DOWN)'))

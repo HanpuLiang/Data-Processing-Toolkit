@@ -185,7 +185,7 @@ def get_POTCAR_files():
             'Lu':'Lu', 
             'Hf':'Hf_pv', 
             'Ta':'Ta_pv', 
-            'W':'W_pv', 
+            'W':'W_sv', 
             'Re':'Re', 
             'Os':'Os', 
             'Ir':'Ir', 

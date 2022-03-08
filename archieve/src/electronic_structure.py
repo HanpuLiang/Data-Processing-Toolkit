@@ -55,7 +55,7 @@ def load_EIGENVAL():
     N_ELECTRONS = int(EIGENVAL_HEAD[5].split()[0])
     N_KPOINTS = int(EIGENVAL_HEAD[5].split()[1])
     N_BAND = int(EIGENVAL_HEAD[5].split()[2])
-    SPIN = int(EIGENVAL_HEAD[0].split()[3])
+    SPIN = int(EIGENVAL_HEAD[0].split()[3])-1
 
 
 def get_k_points():
@@ -65,6 +65,14 @@ def get_k_points():
     if path.exists('OUTCAR') == False:
         src.system_cmd.systemError(' File OUTCAR not found!')
     src.system_cmd.systemEcho(' [DPT] - Reading OUTCAR...')
+    # judge the HSE or PBE
+    with open('./INCAR', 'r') as obj:
+        incar = obj.read()
+    if 'HFSCREEN' in incar:
+        BAND_METHOD = 'HSE06'
+    else:
+        BAND_METHOD = 'PBE'
+    src.system_cmd.systemEcho(' [DPT] - Band method: {0}'.format(BAND_METHOD))
     with open('./OUTCAR', 'r') as obj:
         content = obj.readlines()
     # get the k-points data
@@ -73,12 +81,6 @@ def get_k_points():
             kpoints_data = np.array([[float(num) for num in (item.split())[0:4]] for item in content[i+1:i+1+N_KPOINTS]])
             KPOINTS = kpoints_data[:, 0:3]
             KPOINTS_WEIGHT = kpoints_data[:,3]
-            if 'K-Points along high symmetry lines' in line:
-                BAND_METHOD = 'PBE'
-            elif 'Automatically generated mesh' in line:
-                BAND_METHOD = 'HSE06'
-            else:
-                src.system_cmd.systemError(' Unknown Electronic Structure Calculational Method!')
             break
     else:
         src.system_cmd.systemError(' File OUTCAR is incomplete!')
@@ -134,15 +136,15 @@ def get_energy():
     global ENERGY, N_KPOINTS, N_BAND
     # the number of energy band decided by SPIN
     # when SPIN=1, ENERGY only have one, and when SPIN=2, ENERGY have two in third dimension of tensor
-    for s in range(SPIN):
-        energy_temp = np.zeros((N_BAND, N_KPOINTS, s+1))
+    energy_temp = np.zeros((N_BAND, N_KPOINTS, SPIN+1))
+    for s in range(SPIN+1):
         E = []
         for i in range(0, N_KPOINTS):
             E_cur_k = np.array([float(line.split()[1+s]) for line in EIGENVAL_BODY[i*(N_BAND+1)+1:(i+1)*(N_BAND+1)]])
             energy_temp[:,i,s] = E_cur_k
     # transpose the tensor (fixed the third axis and transpose the others)
-    ENERGY = np.zeros((N_KPOINTS, N_BAND, s+1))
-    for s in range(SPIN):
+    ENERGY = np.zeros((N_KPOINTS, N_BAND, SPIN+1))
+    for s in range(SPIN+1):
         ENERGY[:,:,s] = np.transpose(energy_temp[:,:,s])
     # delete extra line
     extra_num = extra_k_number()
@@ -228,11 +230,11 @@ def save_band(savetype=None, E_0='fermi'):
         one_column_type(K, ENERGY)
     elif savetype == None:
         # save it into file
-        if SPIN == 1:
+        if SPIN == 0:
             file_name = ['DPT.BAND.dat']
-        elif SPIN == 2:
+        elif SPIN == 1:
             file_name = ['DPT.BAND.UP.dat', 'DPT.BAND.DOWN.dat']
-        for s in range(SPIN):
+        for s in range(SPIN+1):
             out_files = np.concatenate((K.reshape(N_KPOINTS, 1), ENERGY[:,:,s]), axis=1)
             with open(file_name[s], 'w') as obj:
                 E_str = '\n'.join([''.join(['{0:16.10f}'.format(item) for item in line]) for line in out_files])
